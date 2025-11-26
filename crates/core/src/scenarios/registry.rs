@@ -19,6 +19,10 @@ pub const KAMINO_V1_OVERRIDES_CONTENT: &str = include_str!("./protocols/kamino/v
 pub const DRIFT_V2_IDL_CONTENT: &str = include_str!("./protocols/drift/v2/idl.json");
 pub const DRIFT_V2_OVERRIDES_CONTENT: &str = include_str!("./protocols/drift/v2/overrides.yaml");
 
+pub const MARINADE_V1_IDL_CONTENT: &str = include_str!("./protocols/marinade/v1/idl.json");
+pub const MARINADE_V1_OVERRIDES_CONTENT: &str =
+    include_str!("./protocols/marinade/v1/overrides.yaml");
+
 /// Registry for managing override templates loaded from YAML files
 #[derive(Clone, Debug, Default)]
 pub struct TemplateRegistry {
@@ -35,6 +39,7 @@ impl TemplateRegistry {
         default.load_raydium_overrides();
         default.load_kamino_overrides();
         default.load_drift_overrides();
+        default.load_marinade_overrides();
         default
     }
 
@@ -64,6 +69,14 @@ impl TemplateRegistry {
 
     pub fn load_drift_overrides(&mut self) {
         self.load_protocol_overrides(DRIFT_V2_IDL_CONTENT, DRIFT_V2_OVERRIDES_CONTENT, "drift");
+    }
+
+    pub fn load_marinade_overrides(&mut self) {
+        self.load_protocol_overrides(
+            MARINADE_V1_IDL_CONTENT,
+            MARINADE_V1_OVERRIDES_CONTENT,
+            "marinade",
+        );
     }
 
     fn load_protocol_overrides(
@@ -143,11 +156,11 @@ mod tests {
     fn test_registry_loads_both_protocols() {
         let registry = TemplateRegistry::new();
 
-        // Should have Pyth (4 templates) + Jupiter (1 template) + Raydium(3 templates) + Drift(4 templates) + Kamino(3 templates)= 15 total
+        // Should have Pyth (4) + Jupiter (1) + Raydium (3) + Drift (4) + Kamino (3) + Marinade (1) = 16 total
         assert_eq!(
             registry.count(),
-            15,
-            "Registry should load 15 templates total"
+            16,
+            "Registry should load 16 templates total"
         );
 
         assert!(registry.contains("pyth-sol-usd-v2"));
@@ -168,7 +181,9 @@ mod tests {
         assert!(registry.contains("drift-perp-market"));
         assert!(registry.contains("drift-spot-market"));
         assert!(registry.contains("drift-user-state"));
-        assert!(registry.contains("drift-global-state"))
+        assert!(registry.contains("drift-global-state"));
+
+        assert!(registry.contains("marinade-state"))
     }
 
     #[test]
@@ -261,13 +276,14 @@ mod tests {
         let registry = TemplateRegistry::new();
         let ids = registry.list_ids();
 
-        assert_eq!(ids.len(), 15);
+        assert_eq!(ids.len(), 16);
         assert!(ids.contains(&"raydium-clmm-sol-usdc".to_string()));
         assert!(ids.contains(&"jupiter-token-ledger-override".to_string()));
         assert!(ids.contains(&"pyth-sol-usd-v2".to_string()));
         assert!(ids.contains(&"kamino-reserve-state".to_string()));
         assert!(ids.contains(&"kamino-reserve-config".to_string()));
         assert!(ids.contains(&"kamino-obligation-health".to_string()));
-        assert!(ids.contains(&"drift-perp-market".to_string()))
+        assert!(ids.contains(&"drift-perp-market".to_string()));
+        assert!(ids.contains(&"marinade-state".to_string()))
     }
 }

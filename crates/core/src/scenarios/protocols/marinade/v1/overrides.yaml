@@ -1,0 +1,19 @@
+protocol: Marinade
+version: v1
+account_type: State
+idl_file_path: idl.json
+
+tags:
+  - liquid-staking
+  - staking
+  - defi
+
+templates:
+  - id: marinade-state
+    name: Override Marinade State
+    description: Override Marinade Finance state with simulated values for exchange rate and balances
+    idl_account_name: State
+    properties: ["msol_supply", "msol_price", "available_reserve_balance", "circulating_ticket_count"]
+    address:
+      type: pubkey
+      value: 8szGkuLTAux9XMgZ2vtY39jVSowEcpBfFfD8hXSEqdGC
